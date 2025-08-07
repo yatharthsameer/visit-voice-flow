@@ -24,6 +24,35 @@ const mockTranscript = [
   { speaker: "Patient", time: "10:20", text: "I can dress myself, but I need help with showering. My daughter comes by twice a week to help." },
 ];
 
+// Map answers to transcript sources for highlighting
+const answerToTranscriptMap: Record<string, string[]> = {
+  age: ["78"],
+  diagnosis: ["back has been hurting", "blood pressure"],
+  medications: ["ibuprofen twice a day", "blood pressure medicine every morning"],
+  allergies: ["None reported"],
+  emergency_contact: ["daughter"],
+  mobility: ["walker to get around the house safely"],
+  adl_bathing: ["need help with showering", "daughter comes by twice a week"],
+  adl_dressing: ["I can dress myself"],
+  fall_risk: ["walker"],
+  cognitive: ["Alert"],
+  pain_level: ["7 out of 10"],
+  vital_signs: ["140 over 85"],
+  wound_care: ["No wounds"],
+  nutrition: ["Adequate"],
+  elimination: ["regular"],
+  home_safety: ["walker", "daughter"],
+  support_system: ["daughter comes by twice a week"],
+  equipment: ["walker"],
+  medication_management: ["I take the ibuprofen"],
+  emergency_plan: ["daughter"],
+  goals: ["back has been hurting"],
+  interventions: ["pain medication"],
+  education: ["medication"],
+  next_visit: ["Follow-up"],
+  physician_communication: ["blood pressure"]
+};
+
 const oasisSections = [
   {
     id: "demographics",
@@ -83,14 +112,15 @@ const oasisSections = [
 ];
 
 const FillingPage = () => {
-  const [highlightedText, setHighlightedText] = useState<string | null>(null);
+  const [highlightedPhrases, setHighlightedPhrases] = useState<string[]>([]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
   const handleAnswerClick = (questionId: string, value: string) => {
-    setHighlightedText(value);
-    // Scroll to transcript if needed
-    setTimeout(() => setHighlightedText(null), 3000);
+    const phrases = answerToTranscriptMap[questionId] || [];
+    setHighlightedPhrases(phrases);
+    // Clear highlights after 5 seconds
+    setTimeout(() => setHighlightedPhrases([]), 5000);
   };
 
   const handleSubmit = () => {
@@ -190,14 +220,25 @@ const FillingPage = () => {
                       <div className="flex items-center space-x-2 mb-1">
                         <span className="text-xs text-muted-foreground">{entry.time}</span>
                       </div>
-                      <p 
-                        className={`text-sm leading-relaxed ${
-                          highlightedText && entry.text.includes(highlightedText.split(' ')[0])
-                            ? 'bg-red-100 border-b-2 border-red-500 dark:bg-red-900/20' 
-                            : ''
-                        }`}
-                      >
-                        {entry.text}
+                      <p className="text-sm leading-relaxed">
+                        {highlightedPhrases.length > 0 ? (
+                          entry.text.split(' ').map((word, wordIndex) => {
+                            const isHighlighted = highlightedPhrases.some(phrase => 
+                              phrase.toLowerCase().includes(word.toLowerCase()) ||
+                              word.toLowerCase().includes(phrase.toLowerCase())
+                            );
+                            return (
+                              <span
+                                key={wordIndex}
+                                className={isHighlighted ? 'bg-destructive/20 border-b-2 border-destructive' : ''}
+                              >
+                                {word}{wordIndex < entry.text.split(' ').length - 1 ? ' ' : ''}
+                              </span>
+                            );
+                          })
+                        ) : (
+                          entry.text
+                        )}
                       </p>
                     </div>
                   </div>
