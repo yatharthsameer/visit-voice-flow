@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import QuestionCard from "@/components/QuestionCard";
 import {
   Mic,
-  MicOff,
+  Pause,
+  Play,
   CheckCircle,
   Square,
   Loader2
@@ -22,6 +23,7 @@ const mockQuestions = [
 
 const ConversationPage = () => {
   const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const [questions, setQuestions] = useState<string[]>([]);
   const [isEnding, setIsEnding] = useState(false);
@@ -35,7 +37,7 @@ const [levels, setLevels] = useState<number[]>(
 
 useEffect(() => {
   let id: number | undefined;
-  if (isRecording) {
+  if (isRecording && !isPaused) {
     id = window.setInterval(() => {
       setLevels(
         Array.from({ length: WAVE_BARS }, () => Math.floor(Math.random() * 56) + 8)
@@ -47,7 +49,7 @@ useEffect(() => {
   return () => {
     if (id) window.clearInterval(id);
   };
-}, [isRecording]);
+}, [isRecording, isPaused]);
 
 useEffect(() => {
   document.title = "Record Conversation | HealthScribe";
@@ -55,6 +57,7 @@ useEffect(() => {
 
   const handleStartRecording = () => {
     setIsRecording(true);
+    setIsPaused(false);
     toast({
       title: "Recording Started",
       description: "Ambient transcription is now active",
@@ -63,9 +66,26 @@ useEffect(() => {
 
   const handleStopRecording = () => {
     setIsRecording(false);
+    setIsPaused(false);
     toast({
       title: "Recording Stopped",
+      description: "Transcription ended",
+    });
+  };
+
+  const handlePause = () => {
+    setIsPaused(true);
+    toast({
+      title: "Paused",
       description: "Transcription paused",
+    });
+  };
+
+  const handleResume = () => {
+    setIsPaused(false);
+    toast({
+      title: "Resumed",
+      description: "Transcription resumed",
     });
   };
 
@@ -144,43 +164,50 @@ useEffect(() => {
           {/* Main Recording Control */}
           <div className="mb-12">
             <div className="relative inline-flex">
-              {isRecording && (
+              {isRecording && !isPaused && (
                 <span
                   aria-hidden
                   className="absolute -inset-6 rounded-full bg-gradient-to-br from-primary/30 to-primary/5 blur-2xl animate-pulse"
                 />
               )}
               <Button
-                aria-label={isRecording ? "Stop recording" : "Start recording"}
+                aria-label={!isRecording ? "Start recording" : isPaused ? "Resume recording" : "Pause recording"}
                 size="lg"
-                onClick={isRecording ? handleStopRecording : handleStartRecording}
+                onClick={!isRecording ? handleStartRecording : isPaused ? handleResume : handlePause}
                 className={`
                   hover-scale h-32 w-32 rounded-full text-lg font-semibold
                   ring-4 ring-primary/25 ring-offset-2 ring-offset-background
-                  ${isRecording 
-                    ? 'bg-destructive hover:bg-destructive/90 animate-recording' 
-                    : 'bg-primary hover:bg-primary/90'
+                  ${!isRecording 
+                    ? 'bg-primary hover:bg-primary/90' 
+                    : isPaused 
+                      ? 'bg-secondary hover:bg-secondary/90' 
+                      : 'bg-destructive hover:bg-destructive/90 animate-recording'
                   }
                   transition-all duration-300
                 `}
               >
                 <div className="flex flex-col items-center space-y-2">
-                  {isRecording ? (
-                    <>
-                      <MicOff className="h-8 w-8" />
-                      <span className="text-sm">Stop</span>
-                    </>
-                  ) : (
+                  {!isRecording ? (
                     <>
                       <Mic className="h-8 w-8" />
                       <span className="text-sm">Start</span>
+                    </>
+                  ) : isPaused ? (
+                    <>
+                      <Play className="h-8 w-8" />
+                      <span className="text-sm">Resume</span>
+                    </>
+                  ) : (
+                    <>
+                      <Pause className="h-8 w-8" />
+                      <span className="text-sm">Pause</span>
                     </>
                   )}
                 </div>
               </Button>
             </div>
 
-            {isRecording && (
+            {isRecording && !isPaused && (
               <>
                 <p className="text-primary font-medium mt-4 pulse">
                   Listening...
@@ -234,14 +261,15 @@ useEffect(() => {
           {isRecording && (
             <Card className="mt-8 p-6 border-primary/20 animate-fade-in">
               <div className="flex items-center justify-center space-x-3">
-                <div className="h-3 w-3 bg-primary rounded-full animate-pulse"></div>
+                <div className={`h-3 w-3 rounded-full ${isPaused ? 'bg-muted-foreground' : 'bg-primary'} animate-pulse`}></div>
                 <p className="text-foreground font-medium">
-                  Ambient transcription active
+                  {isPaused ? 'Transcription paused' : 'Ambient transcription active'}
                 </p>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
-                Speak naturally with your patient. The system will capture conversation
-                and identify missing assessment questions.
+                {isPaused
+                  ? 'Transcription is paused. Tap resume to continue.'
+                  : 'Speak naturally with your patient. The system will capture conversation and identify missing assessment questions.'}
               </p>
             </Card>
           )}
