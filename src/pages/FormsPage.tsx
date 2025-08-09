@@ -152,70 +152,123 @@ const FormsPage = () => {
             </div>
           </Card>
 
-          {/* Forms Table */}
-          <Card className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Form ID</TableHead>
-                  <TableHead>Patient Name</TableHead>
-                  <TableHead>Visit Date</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Duration</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredForms.map((form) => (
-                  <TableRow key={form.id}>
-                    <TableCell className="font-medium">{form.id}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <User className="h-4 w-4 text-muted-foreground" />
-                        <span>{form.patientName}</span>
+          {/* Forms List - Mobile/Tablet */}
+          <div className="block lg:hidden">
+            <Card className="divide-y">
+              {filteredForms.map((form) => (
+                <div key={form.id} className="p-4 flex items-start justify-between gap-3">
+                  <div className="min-w-0 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium truncate">{form.patientName}</span>
+                      {getStatusBadge(form.status)}
+                    </div>
+                    <div className="text-sm text-muted-foreground space-y-1">
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        <span className="truncate">ID: {form.id}</span>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
                         <span>{new Date(form.visitDate).toLocaleDateString()}</span>
+                        <span className="mx-1">•</span>
+                        <span className="truncate">{form.visitType}</span>
                       </div>
-                    </TableCell>
-                    <TableCell>{form.visitType}</TableCell>
-                    <TableCell>{getStatusBadge(form.status)}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
                         <span>{form.completionTime}</span>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(form.id)}
-                          className="flex items-center space-x-1"
-                        >
-                          <Edit className="h-4 w-4" />
-                          <span>Edit</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="flex items-center space-x-1"
-                        >
-                          <Eye className="h-4 w-4" />
-                          <span>View</span>
-                        </Button>
-                      </div>
-                    </TableCell>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleEdit(form.id)}
+                      className="inline-flex items-center gap-1"
+                    >
+                      <Edit className="h-4 w-4" />
+                      <span>Edit</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="inline-flex items-center gap-1"
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span>View</span>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </Card>
+          </div>
+
+          {/* Forms Table - Desktop */}
+          <div className="hidden lg:block">
+            <Card className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Form ID</TableHead>
+                    <TableHead>Patient Name</TableHead>
+                    <TableHead>Visit Date</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Duration</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+                </TableHeader>
+                <TableBody>
+                  {filteredForms.map((form) => (
+                    <TableRow key={form.id}>
+                      <TableCell className="font-medium">{form.id}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <User className="h-4 w-4 text-muted-foreground" />
+                          <span>{form.patientName}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <span>{new Date(form.visitDate).toLocaleDateString()}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{form.visitType}</TableCell>
+                      <TableCell>{getStatusBadge(form.status)}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <span>{form.completionTime}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(form.id)}
+                            className="flex items-center space-x-1"
+                          >
+                            <Edit className="h-4 w-4" />
+                            <span>Edit</span>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="flex items-center space-x-1"
+                          >
+                            <Eye className="h-4 w-4" />
+                            <span>View</span>
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          </div>
 
           {filteredForms.length === 0 && (
             <Card className="p-8 text-center">
