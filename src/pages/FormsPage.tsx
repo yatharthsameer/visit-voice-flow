@@ -153,7 +153,7 @@ const FormsPage = () => {
           </Card>
 
           {/* Forms Table */}
-          <Card>
+          <Card className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>

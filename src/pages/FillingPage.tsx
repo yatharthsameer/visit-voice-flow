@@ -142,7 +142,7 @@ const FillingPage = () => {
           <p className="text-muted-foreground">Review and complete the assessment form</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left Column - OASIS Form */}
           <div className="space-y-4">
             <Card className="p-6">
@@ -202,10 +202,10 @@ const FillingPage = () => {
           </div>
 
           {/* Right Column - Transcript */}
-          <div className="space-y-4">
+          <div className="space-y-4 md:sticky md:top-16 self-start">
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">Conversation Transcript</h3>
-              <div className="space-y-4 max-h-[800px] overflow-y-auto">
+              <div className="space-y-4 max-h-[60vh] md:max-h-[70vh] overflow-y-auto">
                 {mockTranscript.map((entry, index) => (
                   <div key={index} className="flex space-x-3">
                     <div className="flex-shrink-0">

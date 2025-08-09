@@ -122,7 +122,7 @@ const DashboardPage = () => {
           </div>
 
           {/* Charts Row 1 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Weekly Performance */}
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">Weekly Performance Trends</h3>
@@ -201,7 +201,7 @@ const DashboardPage = () => {
           </div>
 
           {/* Charts Row 2 */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Missed Questions Analysis */}
             <Card className="p-6 lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
